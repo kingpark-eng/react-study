@@ -3,20 +3,38 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Square from './components/Square'
+import calculateWinner from './components/CalculateWinner'
 
-export default function App(){
- 
+function App(){
+  const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   //이벤트 처리함수는 handle명칭사용
   const handleClick=(i)=>{
+    if(squares[i] || calculateWinner(squares)){
+      return;
+    } 
     const nextSquares = squares.slice();  //배열 복사
-    nextSquares[i]='X';
+    if(xIsNext){
+      nextSquares[i]='X';
+    }else{
+      nextSquares[i]='O';
+    }
     setSquares(nextSquares);
+    setXIsNext(!xIsNext);
   } 
+
+  const winner = calculateWinner(squares);
+  let status;
+  if(winner){
+    status = "Winner: " + winner;
+  }else{
+    status = "Next player: " + (xIsNext ? "X" : "O");
+  }
 
   return (
     <>
+      <div className="status">{status}</div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={()=>handleClick(0)}/>
         <Square value={squares[1]} onSquareClick={()=>handleClick(1)}/>
@@ -34,6 +52,22 @@ export default function App(){
       </div>
     </>
   );
+}
+
+export default function Game(){
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <App />
+      </div>
+      <div className="game-info">
+        <ol>{/*TODO*/}</ol>
+      </div>
+    </div>
+  );  
 }
 
 
