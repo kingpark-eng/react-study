@@ -3,92 +3,41 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-// https://ko.react.dev/learn/thinking-in-react
-const ProductCategoryRow=({category})=>{
-  return (
-    <tr>
-      <th colspan="2">{category}</th>
-    </tr>
-  );
-}
+// https://ko.react.dev/learn/adding-interactivity
+// React에서는 이러한 컴포넌트별 메모리를 state라고 부름
 
-const ProductRow=({product})=>{
+export default function Gallery() {
+  const [index, setIndex] = useState(0);
+  const [showMore, setShowMore] = useState(false);
+  const hasNext = index < sculptureList.length - 1;
 
-  const name = product.stocked ? product.name : <span style={{color:'red'}}>{product.name}</span>;
-
-  return (
-    <tr>
-      <td>{name}</td>
-      <td>{product.price}</td>
-    </tr>
-  )
-}
-
-const SearchBar=({filterText, inStockOnly, onFilterTextChange, onInStockOnlyChange})=>{
-  return (
-    <form>
-      <input type='text' placeholder='Search...' value={filterText} onChange={(e)=>onFilterTextChange(e.target.value)}/><p></p>
-      <label>
-        <input type="checkbox" checked={inStockOnly} onChange={(e)=>onInStockOnlyChange(e.target.checked)}/>{' '}Only show products in stock
-      </label>
-    </form>
-  );
-}
-
-const ProductTable=({products})=>{
-  const rows=[];
-  let lastCategory=null;
-
-  // map((element, index, array)=>{   //현재 요소, 현재 인덱스, 원본 배열 전체
-  // foreach() => 요소를 돌리고 배열을 반환하지않음.
-  products.forEach((element)=> {
-    if(element.category !== lastCategory){
-      rows.push(
-        <ProductCategoryRow category={element.category} key={element.category}/>
-      );
+  function handleNextClick(){
+    if(hasNext){
+      setIndex(index+1);
+    } else{
+      setIndex(0);
     }
-    rows.push(
-      <ProductRow product={element} key={element.name} />
-    );       
-    lastCategory=element.category;
-  });  
+  }
 
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>price</th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
-  );
-}
+  function handleMoreClick(){
+    setShowMore(!showMore);
+  }
 
-const FilterableProductTable=({products})=>{
-  const [filterText, setFilterText] = useState('fruit');
-  const [inStockOnly, setInStockOnly] = useState(false);
+  let sculpture = sculptureList[index];
 
   return (
     <>
-      <SearchBar filterText={filterText} inStockOnly={inStockOnly} onFilterTextChange={setFilterText} onInStockOnlyChange={setInStockOnly}/>
-      <ProductTable products={products} filterText={filterText} inStockOnly={inStockOnly}/>
+      <button onClick={handleMoreClick}>Next</button>
+      <h2>
+        <i>{sculpture.name}</i>
+         by {sculpture.artist}
+      </h2>
+      <h3>({index+1} of {sculptureList.length}) </h3>
+      <button onclick={handleMoreClick}>{showMore ? 'Hide' : 'Show'} details</button>
+      {showMore && <p>{sculpture.description}</p>}
+      <img src={sculpture.img} alt={sculpture.alt}></img>
     </>
   );
-}
-
-const PRODUCTS = [
-  {category: "Fruits", price: "$1", stocked: true, name: "Apple"},
-  {category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"},
-  {category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"},
-  {category: "Vegetables", price: "$2", stocked: true, name: "Spinach"},
-  {category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"},
-  {category: "Vegetables", price: "$1", stocked: true, name: "Peas"}
-];
-
-export default function App() {
-  return <FilterableProductTable products={PRODUCTS} />;
 }
 
 
