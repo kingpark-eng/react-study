@@ -2,104 +2,93 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Square from './components/Square'
-import calculateWinner from './components/CalculateWinner'
 
-function Board({xIsNext, squares, onPlay}){
-  // const [xIsNext, setXIsNext] = useState(true);
-  // const [squares, setSquares] = useState(Array(9).fill(null));
+// https://ko.react.dev/learn/thinking-in-react
+const ProductCategoryRow=({category})=>{
+  return (
+    <tr>
+      <th colspan="2">{category}</th>
+    </tr>
+  );
+}
 
-  //이벤트 처리함수는 handle명칭사용
-  const handleClick=(i)=>{
-    if(squares[i] || calculateWinner(squares)){
-      return;
-    } 
-    const nextSquares = squares.slice();  //배열 복사
-    if(xIsNext){
-      nextSquares[i]='X';
-    }else{
-      nextSquares[i]='O';
+const ProductRow=({product})=>{
+
+  const name = product.stocked ? product.name : <span style={{color:'red'}}>{product.name}</span>;
+
+  return (
+    <tr>
+      <td>{name}</td>
+      <td>{product.price}</td>
+    </tr>
+  )
+}
+
+const SearchBar=({filterText, inStockOnly, onFilterTextChange, onInStockOnlyChange})=>{
+  return (
+    <form>
+      <input type='text' placeholder='Search...' value={filterText} onChange={(e)=>onFilterTextChange(e.target.value)}/><p></p>
+      <label>
+        <input type="checkbox" checked={inStockOnly} onChange={(e)=>onInStockOnlyChange(e.target.checked)}/>{' '}Only show products in stock
+      </label>
+    </form>
+  );
+}
+
+const ProductTable=({products})=>{
+  const rows=[];
+  let lastCategory=null;
+
+  // map((element, index, array)=>{   //현재 요소, 현재 인덱스, 원본 배열 전체
+  // foreach() => 요소를 돌리고 배열을 반환하지않음.
+  products.forEach((element)=> {
+    if(element.category !== lastCategory){
+      rows.push(
+        <ProductCategoryRow category={element.category} key={element.category}/>
+      );
     }
-    // setSquares(nextSquares);
-    // setXIsNext(!xIsNext);
-    onPlay(nextSquares);
-  } 
+    rows.push(
+      <ProductRow product={element} key={element.name} />
+    );       
+    lastCategory=element.category;
+  });  
 
-  const winner = calculateWinner(squares);
-  let status;
-  if(winner){
-    status = "Winner: " + winner;
-  }else{
-    status = "Next player: " + (xIsNext ? "X" : "O");
-  }
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>price</th>
+        </tr>
+      </thead>
+      <tbody>{rows}</tbody>
+    </table>
+  );
+}
+
+const FilterableProductTable=({products})=>{
+  const [filterText, setFilterText] = useState('fruit');
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   return (
     <>
-      <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={()=>handleClick(0)}/>
-        <Square value={squares[1]} onSquareClick={()=>handleClick(1)}/>
-        <Square value={squares[2]} onSquareClick={()=>handleClick(2)}/>
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={()=>handleClick(3)}/>
-        <Square value={squares[4]} onSquareClick={()=>handleClick(4)}/>
-        <Square value={squares[5]} onSquareClick={()=>handleClick(5)}/>
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={()=>handleClick(6)}/>
-        <Square value={squares[7]} onSquareClick={()=>handleClick(7)}/>
-        <Square value={squares[8]} onSquareClick={()=>handleClick(8)}/>
-      </div>
+      <SearchBar filterText={filterText} inStockOnly={inStockOnly} onFilterTextChange={setFilterText} onInStockOnlyChange={setInStockOnly}/>
+      <ProductTable products={products} filterText={filterText} inStockOnly={inStockOnly}/>
     </>
   );
 }
 
-export default function Game(){
-  // const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+const PRODUCTS = [
+  {category: "Fruits", price: "$1", stocked: true, name: "Apple"},
+  {category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"},
+  {category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"},
+  {category: "Vegetables", price: "$2", stocked: true, name: "Spinach"},
+  {category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"},
+  {category: "Vegetables", price: "$1", stocked: true, name: "Peas"}
+];
 
-  const handlePlay=(nextSquares)=>{
-    const nextHistory = [...history.slice(0, currentMove+1), nextSquares];    //slice(start, end) end 바로 앞 인덱스까지 잘라짐.
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length-1);
-    // setXIsNext(!xIsNext);
-  }
-
-  const jumpTo=(nextMove)=>{
-    setCurrentMove(nextMove);
-    // setXIsNext(nextMove % 2 === 0);
-  }
-
-  const moves = history.map((squares,move)=>{
-    let description;
-    if(move>0){
-      description = 'Go to move #' + move;
-    }else{
-      description = 'Go to game start';
-    }
-
-    return(
-      <li key={move}>
-        <button onClick={()=>jumpTo(move)}>{description}</button>
-      </li>
-    )
-
-  })
-
-  return (
-    <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
-      </div>
-      <div className="game-info">
-        <ol>{moves}</ol>
-      </div>
-    </div>
-  );  
+export default function App() {
+  return <FilterableProductTable products={PRODUCTS} />;
 }
 
 
