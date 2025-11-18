@@ -3,41 +3,40 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-// https://ko.react.dev/learn/adding-interactivity
+// https://ko.react.dev/learn/choosing-the-state-structure
 // React에서는 이러한 컴포넌트별 메모리를 state라고 부름
 
-export default function Gallery() {
-  const [index, setIndex] = useState(0);
-  const [showMore, setShowMore] = useState(false);
-  const hasNext = index < sculptureList.length - 1;
+export default function FeedbackForm() {
+  const [text, setText] = useState('입력해주세요.');
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
-  function handleNextClick(){
-    if(hasNext){
-      setIndex(index+1);
-    } else{
-      setIndex(0);
-    }
+  async function handleSubmit(e){
+    e.preventDefault(); //기본 submit 동작(새로고침) 막기
+    setIsSending(true);
+    await sendMessage(text);  //비동기처리
+    setIsSending(false);
+    setIsSent(true);
   }
 
-  function handleMoreClick(){
-    setShowMore(!showMore);
+  if(isSent){
+    return <h1>Thanks for feedback!</h1>
   }
-
-  let sculpture = sculptureList[index];
 
   return (
     <>
-      <button onClick={handleMoreClick}>Next</button>
-      <h2>
-        <i>{sculpture.name}</i>
-         by {sculpture.artist}
-      </h2>
-      <h3>({index+1} of {sculptureList.length}) </h3>
-      <button onclick={handleMoreClick}>{showMore ? 'Hide' : 'Show'} details</button>
-      {showMore && <p>{sculpture.description}</p>}
-      <img src={sculpture.img} alt={sculpture.alt}></img>
+      <form onSubmit={handleSubmit}>
+        <p>How was your stay at The Prancing Pony?</p>
+        <textarea onChange={(e)=>setText(e.target.value)} value={text} disabled={isSending}></textarea><br/>
+        <button type="submit" disabled={isSending}>send</button>
+        {isSending && <p>Sending...</p>}
+      </form>
     </>
   );
 }
 
-
+const sendMessage=(text)=>{
+  return new Promise(resolve=>{   //new Promise((resolve, reject) => {})
+    setTimeout(resolve, 2000);
+  });
+}
