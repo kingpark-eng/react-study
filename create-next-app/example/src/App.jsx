@@ -3,40 +3,30 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-// https://ko.react.dev/learn/choosing-the-state-structure
+// https://ko.react.dev/learn/choosing-the-state-structure (2)
 // React에서는 이러한 컴포넌트별 메모리를 state라고 부름
 
-export default function FeedbackForm() {
-  const [text, setText] = useState('입력해주세요.');
-  const [isSending, setIsSending] = useState(false);
-  const [isSent, setIsSent] = useState(false);
+const initialItems = [
+  { title: 'pretzels', id: 0 },
+  { title: 'crispy seaweed', id: 1 },
+  { title: 'granola bar', id: 2 },
+];
 
-  async function handleSubmit(e){
-    e.preventDefault(); //기본 submit 동작(새로고침) 막기
-    setIsSending(true);
-    await sendMessage(text);  //비동기처리
-    setIsSending(false);
-    setIsSent(true);
-  }
+export default function Menu(){
+  const [items, setItems] = useState(initialItems);
 
-  if(isSent){
-    return <h1>Thanks for feedback!</h1>
-  }
+  const [selectedItem, setSelectedItem] = useState(items[0]);
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <p>How was your stay at The Prancing Pony?</p>
-        <textarea onChange={(e)=>setText(e.target.value)} value={text} disabled={isSending}></textarea><br/>
-        <button type="submit" disabled={isSending}>send</button>
-        {isSending && <p>Sending...</p>}
-      </form>
+      <p>What's your travel snack?</p>
+      <ul>
+         {items.map(item=> 
+            <li key={item.id}>{item.title}{' '}<button onClick={()=>setSelectedItem(item)}>Choose</button></li>
+         )}
+      </ul>
+      <p>You picked {selectedItem.title}</p>
     </>
   );
 }
 
-const sendMessage=(text)=>{
-  return new Promise(resolve=>{   //new Promise((resolve, reject) => {})
-    setTimeout(resolve, 2000);
-  });
-}
