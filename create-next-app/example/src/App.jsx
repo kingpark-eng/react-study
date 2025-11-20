@@ -3,30 +3,26 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-// https://ko.react.dev/learn/choosing-the-state-structure (2)
+// https://ko.react.dev/learn/choosing-the-state-structure 챌린지 2 of 4: 깨진 포장 목록 수정하기 
 // React에서는 이러한 컴포넌트별 메모리를 state라고 부름
 
-const initialItems = [
-  { title: 'pretzels', id: 0 },
-  { title: 'crispy seaweed', id: 1 },
-  { title: 'granola bar', id: 2 },
-];
+//첫번째 체크박스는 체크가 되어잇어야함.
+export default function TravelPlan(){
+ //체크된 갯수 카운터
+ const [checkCnt, setCheckCnt] = useState(0);
+ const [totalPack, setTotalPack] = useState(3);
 
-export default function Menu(){
-  const [items, setItems] = useState(initialItems);
-
-  const [selectedItem, setSelectedItem] = useState(items[0]);
-
-  return (
-    <>
-      <p>What's your travel snack?</p>
-      <ul>
-         {items.map(item=> 
-            <li key={item.id}>{item.title}{' '}<button onClick={()=>setSelectedItem(item)}>Choose</button></li>
-         )}
-      </ul>
-      <p>You picked {selectedItem.title}</p>
-    </>
-  );
+ return(
+  <div>
+    <input type="text" placeholder='Add item'></input>{' '}<button key="1">Add</button>
+    <br/>
+      <input type="checkbox" value="Warm socks" onChange={(e)=>{if(e.target.checked){setCheckCnt(checkCnt+1)}else{setCheckCnt(checkCnt-1)}}}></input>{' '}Warm socks<button>Delete</button><br/>
+      <input type="checkbox" value="Travel journal"></input>{' '}Travel journal<button>Delete</button><br/>
+      <input type="checkbox" value="Watercolors"></input>{' '}Watercolors<button>Delete</button>
+    <br/>
+    <hr/>
+    {checkCnt} out of {totalPack}packed!
+  </div>
+ )
 }
 
