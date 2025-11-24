@@ -6,6 +6,12 @@ import './App.css'
 // https://ko.react.dev/learn/choosing-the-state-structure 챌린지 2 of 4: 깨진 포장 목록 수정하기 
 // React에서는 이러한 컴포넌트별 메모리를 state라고 부름
 
+const packageList = [
+   {id : 0, title : 'Warm socks', packed : true}
+  ,{id : 1, title : 'Travel journal', packed : false}
+  ,{id : 2, title : 'Watercolors', packed : false}
+]
+
 //첫번째 체크박스는 체크가 되어잇어야함.
 export default function TravelPlan(){
  //체크된 갯수 카운터
@@ -16,6 +22,11 @@ export default function TravelPlan(){
   <div>
     <input type="text" placeholder='Add item'></input>{' '}<button key="1">Add</button>
     <br/>
+      {
+        packageList.map(list=>{
+          <li></li>
+        })
+      }   
       <input type="checkbox" value="Warm socks" onChange={(e)=>{if(e.target.checked){setCheckCnt(checkCnt+1)}else{setCheckCnt(checkCnt-1)}}}></input>{' '}Warm socks<button>Delete</button><br/>
       <input type="checkbox" value="Travel journal"></input>{' '}Travel journal<button>Delete</button><br/>
       <input type="checkbox" value="Watercolors"></input>{' '}Watercolors<button>Delete</button>
